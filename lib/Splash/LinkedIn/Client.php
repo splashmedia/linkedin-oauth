@@ -50,13 +50,13 @@ class Client {
      * @param string $method
      * @return array
      */
-    public function fetch($resource, array $payload = array(), $method = 'GET') {
+    public function fetch($resource, array $payload = array(), $method = 'GET', $postData = null) {
         $url = $this->domain . $resource;
 
         $payload = array('oauth2_access_token' => $this->getAccessToken(), 'format' => 'json')
                  + $payload;
 
-        return $this->_request($url, $payload, $method);
+        return $this->_request($url, $payload, $method, $postData);
     }
 
     /**
@@ -117,10 +117,10 @@ class Client {
      * @return array JSON-decoded response
      * @throws Exception
      */
-    protected function _request($url, array $payload = array(), $method = 'GET') {
+    protected function _request($url, array $payload = array(), $method = 'GET', $postData = null) {
         $ch = $this->getCurl();
 
-        if (!empty($payload) && $method == 'GET') {
+        if (!empty($payload) && $method == 'GET' || (!empty($postData)  && $method == 'POST')) {
             $url .= "?" . http_build_query($payload);
         }
 
@@ -132,7 +132,9 @@ class Client {
             case 'POST':
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: multipart/form-data'));
-                if (!empty($payload))
+                if(!empty($postData))
+					curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+				elseif (!empty($payload))
                     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
                 break;
             case 'PUT':
