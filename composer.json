@@ -1,5 +1,5 @@
 {
-    "name": "baltazorr/linkedin-php",
+    "name": "splashmedia/linkedin-php",
     "type": "library",
     "description": "LinkedIn client library",
     "keywords": ["linkedin", "client"],
